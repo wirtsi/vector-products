@@ -1,7 +1,7 @@
 package org.template
 
-import io.prediction.controller.{P2LAlgorithm, Params}
-import io.prediction.data.storage.BiMap
+import org.apache.predictionio.controller.{P2LAlgorithm, Params}
+import org.apache.predictionio.data.storage.BiMap
 
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
@@ -19,8 +19,7 @@ class Model(val itemIds: BiMap[String, Int], val projection: DenseMatrix)
   override def toString = s"Items: ${itemIds.size}"
 }
 
-case class AlgorithmParams(dimensions: Int, yearWeight: Double,
-                           durationWeight: Double, normalizeProjection:
+case class AlgorithmParams(dimensions: Int, normalizeProjection:
                            Boolean) extends Params
 
 
@@ -115,7 +114,7 @@ class Algorithm(val ap: AlgorithmParams)
 
     val numericRow = data.items.map(x => Vectors.dense(x._2.year, x._2
       .duration))
-    val weights = Array(ap.yearWeight, ap.durationWeight)
+    val weights = Array()
     val scaler = new StandardScaler(withMean = true,
       withStd = true).fit(numericRow)
     val numeric = numericRow.map(x => Vectors.dense(scaler.transform(x).

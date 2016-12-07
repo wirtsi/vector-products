@@ -1,10 +1,10 @@
 package org.template
 
-import io.prediction.controller.PDataSource
-import io.prediction.controller.EmptyEvaluationInfo
-import io.prediction.controller.EmptyActualResult
-import io.prediction.controller.Params
-import io.prediction.data.store.PEventStore
+import org.apache.predictionio.controller.PDataSource
+import org.apache.predictionio.controller.EmptyEvaluationInfo
+import org.apache.predictionio.controller.EmptyActualResult
+import org.apache.predictionio.controller.Params
+import org.apache.predictionio.data.store.PEventStore
 
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
@@ -29,16 +29,13 @@ class DataSource(val dsp: DataSourceParams)
       entityType = "item"
     )(sc).map { case (entityId, properties) =>
       val item = try {
-        val title: String = properties.get[String]("title")
-        val producer: String = properties.get[String]("producer")
-        val director: String = properties.get[String]("director")
-        val genres: Array[String] = properties.get[Array[String]]("genres")
-        val actors: Array[String] = properties.get[Array[String]]("actors")
-        val year: Int = properties.get[Int]("year")
-        val duration: Int = properties.get[Int]("duration")
+        val features: Array[Int] = properties.get[Array[Int]]("features")
+        val categories: Array[Int] = properties.get[Array[Int]]("categories")
+        val sizes: Array[Int] = properties.get[Array[Int]]("sizes")
+        val price: Int = properties.get[Int]("price")
+        val original_price: Int = properties.get[Int]("original_price")
 
-        Item(entityId, title, year, duration, genres, producer, director,
-          actors)
+        Item(entityId, price, original_price, features, categories, sizes)
       } catch {
         case e: Exception => {
           logger.error(s"Failed to get properties ${properties} of" +
@@ -53,9 +50,8 @@ class DataSource(val dsp: DataSourceParams)
   }
 }
 
-case class Item(item: String, title: String, year: Int, duration: Int,
-                    genres: Array[String], producer: String, director:
-                    String, actors: Array[String])
+case class Item(item: String, price: Int, original_price: Int,
+                    features: Array[Int], categories: Array[Int], sizes: Array[Int])
 
 class TrainingData(val items: RDD[(String, Item)]) extends Serializable {
   override def toString = {
