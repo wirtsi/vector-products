@@ -98,10 +98,9 @@ class Algorithm(val ap: AlgorithmParams)
      * We use here one-hot encoding
      */
 
-    val categorical = Seq(encode(data.items.map(_._2.director)),
-      encode(data.items.map(_._2.producer)),
-      encode(data.items.map(_._2.genres)),
-      encode(data.items.map(_._2.actors)))
+    val categorical = Seq(encode(data.items.map(_._2.features.toString)),
+      encode(data.items.map(_._2.categories.toString)),
+      encode(data.items.map(_._2.sizes.toString)))
 
     /**
      * Transform numeric vars.
@@ -112,9 +111,9 @@ class Algorithm(val ap: AlgorithmParams)
      * accordingly
      */
 
-    val numericRow = data.items.map(x => Vectors.dense(x._2.year, x._2
-      .duration))
-    val weights = Array()
+    val numericRow = data.items.map(x => Vectors.dense(x._2.price, x._2
+      .original_price))
+    val weights = Array(1, 1)
     val scaler = new StandardScaler(withMean = true,
       withStd = true).fit(numericRow)
     val numeric = numericRow.map(x => Vectors.dense(scaler.transform(x).
